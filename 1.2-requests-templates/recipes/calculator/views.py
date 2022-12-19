@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render
 
 DATA = {
@@ -19,6 +20,7 @@ DATA = {
     # можете добавить свои рецепты ;)
 }
 
+
 # Напишите ваш обработчик. Используйте DATA как источник данных
 # Результат - render(request, 'calculator/index.html', context)
 # В качестве контекста должен быть передан словарь с рецептом:
@@ -28,3 +30,19 @@ DATA = {
 #     'ингредиент2': количество2,
 #   }
 # }
+
+def recipe(request):
+    name_of_recipe = request.path.strip('/')
+    amount_of_person = int(request.GET.get('servings', 1))
+
+    context = {}
+
+    if name_of_recipe in DATA.keys():
+        for key, value in DATA[name_of_recipe].items():
+            DATA[name_of_recipe][key] = value * amount_of_person
+        context['recipe'] = DATA[name_of_recipe]
+    else:
+        context['recipe'] = {}
+
+    return render(request, 'calculator/index.html', context)
+
